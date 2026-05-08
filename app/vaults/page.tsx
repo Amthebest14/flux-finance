@@ -1,14 +1,50 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { UnifiedDashboardHeader } from "@/components/flux/unified-dashboard-header"
 import { VaultMarketplace } from "@/components/flux/vault-marketplace"
 import { DepositModal, type VaultData } from "@/components/flux/deposit-modal"
 import { Vault, Shield, TrendingUp, Users } from "lucide-react"
+import { useReadContract } from "wagmi"
+import { ADDRESSES } from "@/lib/addresses"
+import { getZenPrice } from "@/lib/prices"
 
 export default function VaultsMarketplacePage() {
   const [selectedVault, setSelectedVault] = useState<VaultData | null>(null)
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
+  const [zenPrice, setZenPrice] = useState(7.55)
+
+  useEffect(() => {
+    getZenPrice().then(setZenPrice)
+  }, [])
+
+  const { data: totalAssets } = useReadContract({
+    address: ADDRESSES.vault as `0x${string}`,
+    abi: [
+      {
+        type: "function",
+        name: "totalAssets",
+        inputs: [],
+        outputs: [{ type: "uint256" }],
+        stateMutability: "view",
+      },
+    ],
+    functionName: "totalAssets",
+  })
+
+  const { data: contractApy } = useReadContract({
+    address: ADDRESSES.vault as `0x${string}`,
+    abi: [
+      {
+        type: "function",
+        name: "getAPY",
+        inputs: [],
+        outputs: [{ type: "uint256" }],
+        stateMutability: "view",
+      },
+    ],
+    functionName: "getAPY",
+  })
 
   const handleDeposit = (vault: VaultData) => {
     setSelectedVault(vault)
@@ -20,10 +56,13 @@ export default function VaultsMarketplacePage() {
     setSelectedVault(null)
   }
 
+  const tvlUsd = totalAssets ? (Number(totalAssets) / 1e18) * zenPrice : 589.5 * 1e6
+  const apyValue = contractApy ? `${Number(contractApy) / 100}%` : "17.1%"
+
   const globalStats = [
     { icon: Vault, label: "Total Vaults", value: "6" },
-    { icon: TrendingUp, label: "Avg APY", value: "17.1%" },
-    { icon: Shield, label: "Global TVL", value: "$589.5M" },
+    { icon: TrendingUp, label: "Avg APY", value: apyValue },
+    { icon: Shield, label: "Global TVL", value: totalAssets ? `$${(tvlUsd / 1e6).toFixed(2)}M` : "$589.5M" },
     { icon: Users, label: "Active Users", value: "12,847" },
   ]
 

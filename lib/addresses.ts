@@ -1,0 +1,4 @@
+export const ADDRESSES = {
+  token: "0x89d8AeBFB7572cC69b5aF3dC16512a15b2FB39Aa",
+  vault: "0x823D7A5f3B1Dd163Ce41608c509118EDee36C5b9",
+};

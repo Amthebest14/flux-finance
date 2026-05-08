@@ -27,6 +27,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import type { VaultData } from "./deposit-modal"
+import { useReadContract } from "wagmi"
+import { ADDRESSES } from "@/lib/addresses"
 
 const allVaults: VaultData[] = [
   {
@@ -146,6 +148,34 @@ export function VaultMarketplace({ onDeposit }: VaultMarketplaceProps) {
   const [riskFilter, setRiskFilter] = useState<RiskFilter>("all")
   const [privacyFilter, setPrivacyFilter] = useState<string>("All")
   const [selectedVaultForDrawer, setSelectedVaultForDrawer] = useState<VaultData | null>(null)
+
+  const { data: totalAssets } = useReadContract({
+    address: ADDRESSES.vault as `0x${string}`,
+    abi: [
+      {
+        type: "function",
+        name: "totalAssets",
+        inputs: [],
+        outputs: [{ type: "uint256" }],
+        stateMutability: "view",
+      },
+    ],
+    functionName: "totalAssets",
+  })
+
+  const { data: contractApy } = useReadContract({
+    address: ADDRESSES.vault as `0x${string}`,
+    abi: [
+      {
+        type: "function",
+        name: "getAPY",
+        inputs: [],
+        outputs: [{ type: "uint256" }],
+        stateMutability: "view",
+      },
+    ],
+    functionName: "getAPY",
+  })
 
   const sortLabels: Record<SortOption, string> = {
     "apy-high": "APY: High to Low",

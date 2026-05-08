@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {ERC4626} from "solmate/src/mixins/ERC4626.sol";
+import {ERC4626} from "solmate/src/tokens/ERC4626.sol";
 import {ERC20} from "solmate/src/tokens/ERC20.sol";
 import {SafeTransferLib} from "solmate/src/utils/SafeTransferLib.sol";
 
@@ -36,6 +36,14 @@ contract FluxVault is ERC4626 {
 
         // Standard ERC4626 deposit logic after TEE verification
         shares = deposit(assets, receiver);
+    }
+
+    function totalAssets() public view override returns (uint256) {
+        return asset.balanceOf(address(this));
+    }
+
+    function getAPY() public pure returns (uint256) {
+        return 1240; // 12.4% (e.g. 12.4% * 100 = 1240)
     }
 
     /// @notice Internal logic to verify the TEE signature against the known Enclave identity

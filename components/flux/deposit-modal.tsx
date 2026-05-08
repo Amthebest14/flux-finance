@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import { Shield, Cpu, Lock, Check, ArrowRight, Loader2, AlertTriangle, Info } from "lucide-react"
+import { useBalance, useAccount, useWriteContract } from "wagmi"
+import { ADDRESSES } from "@/lib/addresses"
 import {
   Dialog,
   DialogContent,
@@ -40,6 +42,13 @@ export function DepositModal({ vault, open, onClose }: DepositModalProps) {
   const [amount, setAmount] = useState("")
   const [selectedAsset, setSelectedAsset] = useState<string>("")
 
+  const { address } = useAccount()
+  const { data: zenBalance } = useBalance({
+    address,
+    token: ADDRESSES.token as `0x${string}`,
+  })
+  const { writeContractAsync } = useWriteContract()
+
   const handleClose = () => {
     setStep("amount")
     setAmount("")
@@ -47,13 +56,39 @@ export function DepositModal({ vault, open, onClose }: DepositModalProps) {
     onClose()
   }
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (step === "amount") setStep("review")
     else if (step === "review") setStep("confidentiality")
     else if (step === "confidentiality") {
       setStep("processing")
-      // Simulate transaction processing
-      setTimeout(() => setStep("success"), 3000)
+      try {
+        await writeContractAsync({
+          address: ADDRESSES.vault as `0x${string}`,
+          abi: [
+            {
+              type: "function",
+              name: "shieldedDeposit",
+              inputs: [
+                { type: "uint256", name: "assets" },
+                { type: "address", name: "receiver" },
+                { type: "bytes", name: "attestation" },
+              ],
+              outputs: [{ type: "uint256", name: "shares" }],
+              stateMutability: "nonpayable",
+            },
+          ],
+          functionName: "shieldedDeposit",
+          args: [
+            BigInt(Math.floor(parseFloat(amount) * 1e18)), // Convert to wei
+            address as `0x${string}`,
+            "0x1234", // Mock attestation
+          ],
+        })
+        setStep("success")
+      } catch (error) {
+        console.error("Deposit failed:", error);
+        setStep("amount"); // Go back or show error
+      }
     }
   }
 
@@ -141,7 +176,7 @@ export function DepositModal({ vault, open, onClose }: DepositModalProps) {
                 <div className="flex items-center justify-between">
                   <Label>Amount</Label>
                   <span className="text-xs text-muted-foreground">
-                    Balance: {selectedAsset === "ZEN" ? "12,847.32" : selectedAsset === "USDC" ? "234,102.00" : "0.00"} {selectedAsset || "—"}
+                    Balance: {selectedAsset === "ZEN" ? (zenBalance?.formatted || "0.00") : "0.00"} {selectedAsset || "—"}
                   </span>
                 </div>
                 <div className="relative">
@@ -156,7 +191,7 @@ export function DepositModal({ vault, open, onClose }: DepositModalProps) {
                     variant="ghost"
                     size="sm"
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-primary"
-                    onClick={() => setAmount(selectedAsset === "ZEN" ? "12847.32" : "234102")}
+                    onClick={() => setAmount(selectedAsset === "ZEN" ? (zenBalance?.formatted || "0") : "0")}
                   >
                     MAX
                   </Button>

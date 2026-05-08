@@ -14,3 +14,7 @@ node_modules
 .next/
 .DS_Store
 .vercel
+
+# Hardhat
+packages/contracts/artifacts
+packages/contracts/cache
