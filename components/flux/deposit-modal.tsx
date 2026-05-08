@@ -23,6 +23,8 @@ export interface VaultData {
   privacyTech: "ZK" | "TEE" | "MPC"
   assets: string[]
   userDeposit?: string
+  section?: string
+  strategyDetails?: string
 }
 
 interface DepositModalProps {
