@@ -1,6 +1,7 @@
 "use client"
 
 import { UnifiedDashboardHeader } from "@/components/flux/unified-dashboard-header"
+import { useState, useEffect } from "react"
 import { Vote, Users, Clock, CheckCircle, XCircle, TrendingUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -56,12 +57,26 @@ const statusConfig = {
 }
 
 export default function GovernancePage() {
-  const stats = [
-    { icon: Vote, label: "Active Proposals", value: "2" },
-    { icon: Users, label: "Total Voters", value: "8,294" },
-    { icon: TrendingUp, label: "Participation Rate", value: "67.3%" },
-    { icon: CheckCircle, label: "Proposals Passed", value: "10" },
-  ]
+  const [loadedStats, setLoadedStats] = useState([
+    { icon: Vote, label: "Active Proposals", value: "..." },
+    { icon: Users, label: "Total Voters", value: "..." },
+    { icon: TrendingUp, label: "Participation Rate", value: "..." },
+    { icon: CheckCircle, label: "Proposals Passed", value: "..." },
+  ])
+  const [loadedProposals, setLoadedProposals] = useState<typeof proposals>([])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoadedStats([
+        { icon: Vote, label: "Active Proposals", value: "2" },
+        { icon: Users, label: "Total Voters", value: "8,294" },
+        { icon: TrendingUp, label: "Participation Rate", value: "67.3%" },
+        { icon: CheckCircle, label: "Proposals Passed", value: "10" },
+      ])
+      setLoadedProposals(proposals)
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">
@@ -86,7 +101,7 @@ export default function GovernancePage() {
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-            {stats.map((stat) => {
+            {loadedStats.map((stat) => {
               const Icon = stat.icon
               return (
                 <div key={stat.label} className="glass-card rounded-xl p-4 text-center">
@@ -101,8 +116,11 @@ export default function GovernancePage() {
           {/* Proposals */}
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-foreground mb-4">Proposals</h2>
-            {proposals.map((proposal) => {
-              const totalVotes = proposal.votesFor + proposal.votesAgainst
+            {loadedProposals.length === 0 ? (
+              <div className="text-center text-muted-foreground py-8">Loading proposals...</div>
+            ) : (
+              loadedProposals.map((proposal) => {
+                const totalVotes = proposal.votesFor + proposal.votesAgainst
               const forPercentage = (proposal.votesFor / totalVotes) * 100
               const status = statusConfig[proposal.status as keyof typeof statusConfig]
 
@@ -168,7 +186,8 @@ export default function GovernancePage() {
                   </div>
                 </div>
               )
-            })}
+            })
+          )}
           </div>
         </div>
       </div>

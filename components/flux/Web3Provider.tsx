@@ -25,7 +25,7 @@ const horizenTestnet = defineChain({
 
 const config = getDefaultConfig({
   appName: 'Flux Finance',
-  projectId: 'c233c7c25c345a0026e637ee50e820cb', // Valid WalletConnect ID format required for RainbowKit
+  projectId: '90f7c21eef9af7a0b4ae6f05eb8e9f88', // Updated with user provided WalletConnect ID
   chains: [horizenTestnet],
   ssr: true,
 });

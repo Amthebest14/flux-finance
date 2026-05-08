@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount } from 'wagmi'
+import { useAccount, useSwitchChain } from 'wagmi'
 import { 
   Shield, 
   ShieldCheck, 
@@ -44,9 +44,11 @@ const dashboardNavLinks = [
 export function UnifiedDashboardHeader() {
   const pathname = usePathname()
   const { address, isConnected } = useAccount()
+  const { switchChain } = useSwitchChain()
   const [teeStatus, setTeeStatus] = useState<"active" | "syncing" | "offline">("syncing")
   const [privacyLevel, setPrivacyLevel] = useState(92)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [showNotificationDot, setShowNotificationDot] = useState(true)
 
   // Format address helper
   const formatAddress = (addr: string | undefined) => {
@@ -176,11 +178,11 @@ export function UnifiedDashboardHeader() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="glass">
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => switchChain?.({ chainId: 2651420 })}>
                   <div className="w-2 h-2 rounded-full bg-accent mr-2" />
                   Horizen Base (L3)
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => alert("Horizen EON Testnet support coming soon!")}>
                   <div className="w-2 h-2 rounded-full bg-muted-foreground mr-2" />
                   Horizen EON (Testnet)
                 </DropdownMenuItem>
@@ -188,9 +190,11 @@ export function UnifiedDashboardHeader() {
             </DropdownMenu>
 
             {/* Notifications (Desktop only) */}
-            <Button variant="ghost" size="icon" className="relative h-8 w-8 hidden md:flex mr-2">
+            <Button variant="ghost" size="icon" className="relative h-8 w-8 hidden md:flex mr-2" onClick={() => setShowNotificationDot(false)}>
               <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full" />
+              {showNotificationDot && (
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full" />
+              )}
             </Button>
 
             {/* Wallet (Desktop only) */}
