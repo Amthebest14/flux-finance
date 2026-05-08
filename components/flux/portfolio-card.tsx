@@ -5,19 +5,37 @@ import { Eye, EyeOff, Shield, TrendingUp, TrendingDown, Fingerprint } from "luci
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
+import { useAccount, useBalance } from "wagmi"
+import { useEffect } from "react"
 
 export function PortfolioCard() {
   const [isShielded, setIsShielded] = useState(true)
   const [isVerifying, setIsVerifying] = useState(false)
   const [isRevealed, setIsRevealed] = useState(false)
+  const [yieldEarned, setYieldEarned] = useState("$0.00")
+
+  const { address } = useAccount()
+  const { data: balanceData } = useBalance({
+    address,
+  })
+
+  useEffect(() => {
+    // Mock fetch simulating a call to FluxVault.sol
+    const fetchYield = async () => {
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      setYieldEarned("$23,847.12") // Mock yield from contract
+    }
+    fetchYield()
+  }, [])
 
   const portfolioData = {
     totalValue: "$847,293.42",
     change24h: "+12.4%",
     changePositive: true,
-    zenBalance: "12,847.32 ZEN",
+    zenBalance: balanceData ? `${parseFloat(balanceData.formatted).toFixed(4)} ${balanceData.symbol}` : "0.00 ZEN",
     stableBalance: "$234,102.00",
-    yieldEarned: "$23,847.12",
+    yieldEarned: yieldEarned,
   }
 
   const handleVerifyIdentity = () => {

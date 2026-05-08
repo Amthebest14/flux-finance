@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Vault, TrendingUp, Shield, Cpu, Lock, Zap, ChevronRight, Info } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -115,6 +115,25 @@ interface VaultGridProps {
 
 export function VaultGrid({ onDeposit }: VaultGridProps) {
   const [hoveredVault, setHoveredVault] = useState<string | null>(null)
+  const [liveTVL, setLiveTVL] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    // Mock fetch simulating a call to FluxVault.sol on Horizen Testnet
+    const fetchTVL = async () => {
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 1200))
+      const fetchedTVL: Record<string, string> = {
+        "1": "$24.7M",
+        "2": "$156.3M",
+        "3": "$8.4M",
+        "4": "$342.8M",
+        "5": "$4.2M",
+        "6": "$67.9M",
+      }
+      setLiveTVL(fetchedTVL)
+    }
+    fetchTVL()
+  }, [])
 
   return (
     <Card className="glass-card rounded-xl">
@@ -178,7 +197,9 @@ export function VaultGrid({ onDeposit }: VaultGridProps) {
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">TVL</p>
-                    <p className="text-lg font-semibold text-foreground">{vault.tvl}</p>
+                    <p className="text-lg font-semibold text-foreground">
+                      {liveTVL[vault.id] || "Loading..."}
+                    </p>
                   </div>
                 </div>
 

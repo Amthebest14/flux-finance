@@ -8,7 +8,7 @@ const docSections = [
   {
     icon: Book,
     title: "Getting Started",
-    description: "Learn the basics of Flux Finance and how to make your first deposit.",
+    description: "Learn the basics of Flux Finance, from connecting your wallet to the Horizen Base L3 to making your first confidential deposit.",
     articles: [
       "Introduction to Flux Finance",
       "Connecting Your Wallet",
@@ -19,7 +19,7 @@ const docSections = [
   {
     icon: Shield,
     title: "Privacy & Security",
-    description: "Deep dive into the privacy technologies that protect your assets.",
+    description: "Deep dive into our use of ZK-proofs for selective disclosure and TEE-secured off-chain computation",
     articles: [
       "Zero-Knowledge Proofs Explained",
       "TEE Confidential Computing",
@@ -30,7 +30,7 @@ const docSections = [
   {
     icon: Cpu,
     title: "Horizen Vela Integration",
-    description: "Technical documentation on Vela TEE integration.",
+    description: "Technical overview of how Flux uses AWS Nitro Enclaves (TEEs) and the WASM Executor to hide your yield strategies while maintaining auditability",
     articles: [
       "Vela Architecture Overview",
       "Attestation Verification",
@@ -41,7 +41,7 @@ const docSections = [
   {
     icon: Zap,
     title: "ZEN Tokenomics",
-    description: "Understanding ZEN utility within the Flux ecosystem.",
+    description: "Stake ZEN to earn a share of protocol fees and secure the network. Flux Finance uses a 'compliant privacy' model to ensure institutional-grade safety",
     articles: [
       "ZEN Staking Mechanics",
       "Reward Distribution",
