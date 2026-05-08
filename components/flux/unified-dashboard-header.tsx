@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useAccount } from 'wagmi'
 import { 
   Shield, 
   ShieldCheck, 
@@ -41,9 +43,16 @@ const dashboardNavLinks = [
 
 export function UnifiedDashboardHeader() {
   const pathname = usePathname()
+  const { address, isConnected } = useAccount()
   const [teeStatus, setTeeStatus] = useState<"active" | "syncing" | "offline">("syncing")
   const [privacyLevel, setPrivacyLevel] = useState(92)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // Format address helper
+  const formatAddress = (addr: string | undefined) => {
+    if (!addr) return ""
+    return `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -129,10 +138,12 @@ export function UnifiedDashboardHeader() {
           <div className="flex items-center">
             {/* Mobile: Combined Pill */}
             <div className="flex md:hidden items-center gap-1.5 px-2.5 py-1.5 rounded-full glass border border-glass-border">
-              <div className="flex items-center gap-1.5 pr-2 border-r border-glass-border">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                <span className="text-[10px] font-medium text-foreground">0x7f...9a2c</span>
-              </div>
+              {isConnected && (
+                <div className="flex items-center gap-1.5 pr-2 border-r border-glass-border">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                  <span className="text-[10px] font-medium text-foreground">{formatAddress(address)}</span>
+                </div>
+              )}
               <StatusIcon className={`w-3.5 h-3.5 ${status.color} ${teeStatus === "syncing" ? "animate-pulse" : ""}`} />
               <span className={`text-[10px] font-medium ${status.color}`}>{status.shortLabel}</span>
             </div>
@@ -177,16 +188,15 @@ export function UnifiedDashboardHeader() {
             </DropdownMenu>
 
             {/* Notifications (Desktop only) */}
-            <Button variant="ghost" size="icon" className="relative h-8 w-8 hidden md:flex">
+            <Button variant="ghost" size="icon" className="relative h-8 w-8 hidden md:flex mr-2">
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full" />
             </Button>
 
             {/* Wallet (Desktop only) */}
-            <Button size="sm" className="hidden md:flex bg-gradient-to-r from-primary to-accent hover:opacity-90 text-primary-foreground text-xs h-8 px-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-400 mr-1.5" />
-              0x7f3e...9a2c
-            </Button>
+            <div className="hidden md:flex">
+              <ConnectButton chainStatus="icon" showBalance={false} accountStatus="address" />
+            </div>
 
             {/* Exit App / Home Link (Desktop only) */}
             <Link href="/" className="hidden md:block">
@@ -227,12 +237,8 @@ export function UnifiedDashboardHeader() {
                   </div>
 
                   {/* Mobile Wallet */}
-                  <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-secondary/50 border border-glass-border">
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground">Connected</p>
-                      <p className="text-xs text-muted-foreground font-mono">0x7f3e...9a2c</p>
-                    </div>
+                  <div className="flex items-center justify-between px-3 py-3 rounded-xl bg-secondary/50 border border-glass-border">
+                    <ConnectButton chainStatus="icon" showBalance={false} />
                   </div>
 
                   {/* Mobile Network */}

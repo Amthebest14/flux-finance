@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { TrendingUp, Shield, Cpu, Lock, ChevronRight, Wallet, ArrowUpRight, ArrowDownRight, Vault } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -30,8 +30,8 @@ const userPositions: UserPosition[] = [
     riskLevel: "Low",
     privacyTech: "TEE",
     assets: ["ZEN"],
-    userDeposit: "$12,847.32",
-    earnings24h: "+$42.18",
+    userDeposit: "Loading...",
+    earnings24h: "Loading...",
     earningsPercent: "+0.33%",
     isPositive: true,
   },
@@ -44,8 +44,8 @@ const userPositions: UserPosition[] = [
     riskLevel: "Low",
     privacyTech: "ZK",
     assets: ["USDC", "USDT"],
-    userDeposit: "$234,102.00",
-    earnings24h: "+$52.87",
+    userDeposit: "Loading...",
+    earnings24h: "Loading...",
     earningsPercent: "+0.023%",
     isPositive: true,
   },
@@ -78,9 +78,33 @@ interface UserActivePositionsProps {
 
 export function UserActivePositions({ onManagePosition }: UserActivePositionsProps) {
   const [hoveredPosition, setHoveredPosition] = useState<string | null>(null)
+  const [positions, setPositions] = useState<UserPosition[]>(userPositions)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Mock fetch to FluxVault.sol for active positions
+    const fetchPositions = async () => {
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      const loadedPositions = [...userPositions]
+      loadedPositions[0] = {
+        ...loadedPositions[0],
+        userDeposit: "$12,847.32",
+        earnings24h: "+$42.18"
+      }
+      loadedPositions[1] = {
+        ...loadedPositions[1],
+        userDeposit: "$234,102.00",
+        earnings24h: "+$52.87"
+      }
+      setPositions(loadedPositions)
+      setIsLoading(false)
+    }
+    fetchPositions()
+  }, [])
   
   // Toggle this to see empty state
-  const hasPositions = userPositions.length > 0
+  const hasPositions = positions.length > 0
 
   if (!hasPositions) {
     return (
@@ -110,12 +134,12 @@ export function UserActivePositions({ onManagePosition }: UserActivePositionsPro
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-foreground">Active Positions</h3>
         <Badge variant="outline" className="text-[10px] border-glass-border text-muted-foreground">
-          {userPositions.length} Vaults
+          {positions.length} Vaults
         </Badge>
       </div>
 
       <div className="space-y-3">
-        {userPositions.map((position) => {
+        {positions.map((position) => {
           const PrivacyIcon = privacyTechConfig[position.privacyTech].icon
           return (
             <div

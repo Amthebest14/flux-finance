@@ -4,18 +4,37 @@ import { useState } from "react"
 import { Eye, EyeOff, Shield, TrendingUp, Fingerprint, Wallet, Coins, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
+import { useAccount, useBalance } from "wagmi"
+import { useEffect } from "react"
 
 export function PortfolioCardSimple() {
   const [isShielded, setIsShielded] = useState(true)
   const [isVerifying, setIsVerifying] = useState(false)
   const [isRevealed, setIsRevealed] = useState(false)
+  const [stables, setStables] = useState("$0.00")
+  const [yieldEarned, setYieldEarned] = useState("$0.00")
+
+  const { address } = useAccount()
+  const { data: balanceData } = useBalance({
+    address,
+  })
+
+  useEffect(() => {
+    // Mock fetch for portfolio stats
+    const fetchStats = async () => {
+      await new Promise(resolve => setTimeout(resolve, 800))
+      setStables("$512,847.32")
+      setYieldEarned("$100,344.10")
+    }
+    fetchStats()
+  }, [])
 
   const portfolioData = {
     totalValue: "$847,293.42",
     change24h: "+12.4%",
-    zen: "$234,102.00",
-    stables: "$512,847.32",
-    yield: "$100,344.10",
+    zen: balanceData ? `${parseFloat(balanceData.formatted).toFixed(4)} ${balanceData.symbol}` : "0.00 ZEN",
+    stables: stables,
+    yield: yieldEarned,
   }
 
   const handleVerifyIdentity = () => {

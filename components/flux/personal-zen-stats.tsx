@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Zap, Shield, Cpu, Lock, TrendingUp, Info } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { useAccount, useBalance } from "wagmi"
 import {
   Tooltip,
   TooltipContent,
@@ -11,27 +12,41 @@ import {
 } from "@/components/ui/tooltip"
 
 export function PersonalZenStats() {
-  const [zenUsed, setZenUsed] = useState(1247.83)
+  const { address } = useAccount()
+  const { data: balanceData } = useBalance({ address })
+  
+  const baseZen = balanceData ? parseFloat(balanceData.formatted) : 0
+  
+  const [zenUsed, setZenUsed] = useState(baseZen)
   const [isIncrementing, setIsIncrementing] = useState(false)
 
-  // Simulate live ZEN utility counter
+  // Update base zen when balance changes
   useEffect(() => {
+    if (balanceData) {
+      setZenUsed(parseFloat(balanceData.formatted))
+    }
+  }, [balanceData])
+
+  // Simulate live ZEN utility counter on top of actual balance
+  useEffect(() => {
+    if (baseZen === 0) return
+    
     const interval = setInterval(() => {
       setIsIncrementing(true)
       setZenUsed((prev) => {
-        const increment = Math.random() * 0.5 + 0.1
+        const increment = Math.random() * 0.05 + 0.01
         return Math.round((prev + increment) * 100) / 100
       })
       setTimeout(() => setIsIncrementing(false), 500)
     }, 4000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [baseZen])
 
   const utilityBreakdown = [
     {
       label: "TEE Validation",
-      value: "523.41 ZEN",
+      value: `${(zenUsed * 0.42).toFixed(2)} ZEN`,
       icon: Cpu,
       color: "text-primary",
       bg: "bg-primary/10",
@@ -39,7 +54,7 @@ export function PersonalZenStats() {
     },
     {
       label: "ZK Proof Generation",
-      value: "412.87 ZEN",
+      value: `${(zenUsed * 0.33).toFixed(2)} ZEN`,
       icon: Shield,
       color: "text-accent",
       bg: "bg-accent/10",
@@ -47,7 +62,7 @@ export function PersonalZenStats() {
     },
     {
       label: "Position Security",
-      value: "311.55 ZEN",
+      value: `${(zenUsed * 0.25).toFixed(2)} ZEN`,
       icon: Lock,
       color: "text-chart-4",
       bg: "bg-chart-4/10",
