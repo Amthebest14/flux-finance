@@ -15,17 +15,17 @@ const horizenTestnet = defineChain({
     symbol: 'tZEN',
   },
   rpcUrls: {
-    default: { http: ['https://rpc.testnet.horizen.io'] }, // Placeholder, update if needed
+    default: { http: ['https://horizen-testnet.rpc.caldera.xyz/http'] },
   },
   blockExplorers: {
-    default: { name: 'Horizen Explorer', url: 'https://explorer.testnet.horizen.io' },
+    default: { name: 'Horizen Explorer', url: 'https://horizen-testnet.explorer.caldera.xyz/' },
   },
   testnet: true,
 });
 
 const config = getDefaultConfig({
   appName: 'Flux Finance',
-  projectId: 'YOUR_PROJECT_ID', // Replaced with actual WalletConnect project ID in production
+  projectId: 'c233c7c25c345a0026e637ee50e820cb', // Valid WalletConnect ID format required for RainbowKit
   chains: [horizenTestnet],
   ssr: true,
 });
