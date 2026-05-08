@@ -78,31 +78,9 @@ interface UserActivePositionsProps {
 
 export function UserActivePositions({ onManagePosition }: UserActivePositionsProps) {
   const [hoveredPosition, setHoveredPosition] = useState<string | null>(null)
-  const [positions, setPositions] = useState<UserPosition[]>(userPositions)
-  const [isLoading, setIsLoading] = useState(true)
+  const [positions, setPositions] = useState<UserPosition[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    // Mock fetch to FluxVault.sol for active positions
-    const fetchPositions = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      const loadedPositions = [...userPositions]
-      loadedPositions[0] = {
-        ...loadedPositions[0],
-        userDeposit: "$12,847.32",
-        earnings24h: "+$42.18"
-      }
-      loadedPositions[1] = {
-        ...loadedPositions[1],
-        userDeposit: "$234,102.00",
-        earnings24h: "+$52.87"
-      }
-      setPositions(loadedPositions)
-      setIsLoading(false)
-    }
-    fetchPositions()
-  }, [])
-  
   // Toggle this to see empty state
   const hasPositions = positions.length > 0
 

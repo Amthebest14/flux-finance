@@ -11,30 +11,17 @@ export function PortfolioCardSimple() {
   const [isShielded, setIsShielded] = useState(true)
   const [isVerifying, setIsVerifying] = useState(false)
   const [isRevealed, setIsRevealed] = useState(false)
-  const [stables, setStables] = useState("$0.00")
-  const [yieldEarned, setYieldEarned] = useState("$0.00")
-
   const { address } = useAccount()
   const { data: balanceData } = useBalance({
     address,
   })
 
-  useEffect(() => {
-    // Mock fetch for portfolio stats
-    const fetchStats = async () => {
-      await new Promise(resolve => setTimeout(resolve, 800))
-      setStables("$512,847.32")
-      setYieldEarned("$100,344.10")
-    }
-    fetchStats()
-  }, [])
-
   const portfolioData = {
-    totalValue: "$847,293.42",
-    change24h: "+12.4%",
+    totalValue: balanceData ? `$${(parseFloat(balanceData.formatted) * 10).toFixed(2)}` : "$0.00",
+    change24h: "+0.0%",
     zen: balanceData ? `${parseFloat(balanceData.formatted).toFixed(4)} ${balanceData.symbol}` : "0.00 ZEN",
-    stables: stables,
-    yield: yieldEarned,
+    stables: "$0.00",
+    yield: "$0.00",
   }
 
   const handleVerifyIdentity = () => {

@@ -3,6 +3,12 @@
 import { UnifiedDashboardHeader } from "@/components/flux/unified-dashboard-header"
 import { Book, Shield, Cpu, Zap, Code, FileText, ExternalLink, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 
 const docSections = [
   {
@@ -10,10 +16,10 @@ const docSections = [
     title: "Getting Started",
     description: "Learn the basics of Flux Finance, from connecting your wallet to the Horizen Base L3 to making your first confidential deposit.",
     articles: [
-      "Introduction to Flux Finance",
-      "Connecting Your Wallet",
-      "Making Your First Deposit",
-      "Understanding Yield Strategies",
+      { title: "Introduction to Flux Finance", content: "Flux is a privacy-first yield protocol on Horizen Base L3, designed to hide institutional strategies from public view." },
+      { title: "Connecting Your Wallet", content: "Use MetaMask or Rabby to connect to the Horizen Testnet (Chain ID: 2651420) to access the Vela TEE layer." },
+      { title: "Making Your First Deposit", content: "Funds are encrypted in your browser and sent to a shielded vault where only you hold the viewing key." },
+      { title: "Understanding Yield Strategies", content: "Flux utilizes delta-neutral and auto-compounding strategies executed inside secure enclaves." },
     ],
   },
   {
@@ -21,10 +27,10 @@ const docSections = [
     title: "Privacy & Security",
     description: "Deep dive into our use of ZK-proofs for selective disclosure and TEE-secured off-chain computation",
     articles: [
-      "Zero-Knowledge Proofs Explained",
-      "TEE Confidential Computing",
-      "MPC Key Management",
-      "Security Audit Reports",
+      { title: "Zero-Knowledge Proofs Explained", content: "We use ZK-proofs to verify your ownership of assets without revealing your wallet's history or total balance." },
+      { title: "TEE Confidential Computing", content: "Execution occurs in AWS Nitro Enclaves, ensuring data is never visible to the host machine or the public chain." },
+      { title: "MPC Key Management", content: "Multi-Party Computation ensures that no single entity holds the full key to the protocol's liquidity." },
+      { title: "Security Audit Reports", content: "Our Vela-integrated smart contracts undergo continuous automated auditing via formal verification." },
     ],
   },
   {
@@ -32,10 +38,10 @@ const docSections = [
     title: "Horizen Vela Integration",
     description: "Technical overview of how Flux uses AWS Nitro Enclaves (TEEs) and the WASM Executor to hide your yield strategies while maintaining auditability",
     articles: [
-      "Vela Architecture Overview",
-      "Attestation Verification",
-      "Enclave Deployment",
-      "API Reference",
+      { title: "Vela Architecture Overview", content: "A deep dive into the Horizen 2.0 sidechain architecture and the secure processor manager." },
+      { title: "Attestation Verification", content: "How the blockchain verifies that code is running inside a genuine, untampered TEE." },
+      { title: "Enclave Deployment", content: "Documentation on the WASM-based executor used for confidential protocol logic." },
+      { title: "API Reference", content: "Standardized endpoints for querying the TEE for your private portfolio state." },
     ],
   },
   {
@@ -43,10 +49,10 @@ const docSections = [
     title: "ZEN Tokenomics",
     description: "Stake ZEN to earn a share of protocol fees and secure the network. Flux Finance uses a 'compliant privacy' model to ensure institutional-grade safety",
     articles: [
-      "ZEN Staking Mechanics",
-      "Reward Distribution",
-      "Governance Voting Power",
-      "Protocol Fee Structure",
+      { title: "ZEN Staking Mechanics", content: "Lock ZEN to secure the protocol and receive a portion of all vault performance fees." },
+      { title: "Reward Distribution", content: "Yield is credited to your shielded balance and can be claimed as native ZEN or auto-compounded." },
+      { title: "Governance Voting Power", content: "$gZEN$ holders vote on which new strategies are whitelisted for the TEE enclaves." },
+      { title: "Protocol Fee Structure", content: "A transparent 2% management fee and 10% performance fee, all settled on-chain." },
     ],
   },
   {
@@ -54,10 +60,10 @@ const docSections = [
     title: "Developer Guides",
     description: "Build on top of Flux Finance with our developer resources.",
     articles: [
-      "SDK Installation",
-      "Smart Contract Interfaces",
-      "Webhook Integration",
-      "GraphQL API",
+      { title: "SDK Installation", content: "Install the `vela-common-ts` library to build your own privacy-preserving frontend tools." },
+      { title: "Smart Contract Interfaces", content: "Standardized Solidity interfaces for interacting with Flux vaults from other dApps." },
+      { title: "Webhook Integration", content: "Set up real-time alerts for when your private vault reaches specific yield milestones." },
+      { title: "GraphQL API", content: "Efficiently index public vault data (TVL, APY) while maintaining individual user privacy." },
     ],
   },
   {
@@ -65,10 +71,10 @@ const docSections = [
     title: "Legal & Compliance",
     description: "Regulatory information and compliance documentation.",
     articles: [
-      "Terms of Service",
-      "Privacy Policy",
-      "Risk Disclosures",
-      "Jurisdictional Restrictions",
+      { title: "Terms of Service", content: "Standard protocol terms focused on the use of experimental confidential compute technologies." },
+      { title: "Privacy Policy", content: "We do not track IPs or wallet data; all metadata is stripped before reaching the TEE." },
+      { title: "Risk Disclosures", content: "Understanding smart contract risk and the trust assumptions of the Vela TEE layer." },
+      { title: "Jurisdictional Restrictions", content: "Flux is not available in jurisdictions where decentralized finance is restricted." },
     ],
   },
 ]
@@ -122,19 +128,18 @@ export default function DocsPage() {
                     <h3 className="text-lg font-semibold text-foreground">{section.title}</h3>
                   </div>
                   <p className="text-sm text-muted-foreground mb-4">{section.description}</p>
-                  <ul className="space-y-2">
-                    {section.articles.map((article) => (
-                      <li key={article}>
-                        <a
-                          href="#"
-                          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group/link"
-                        >
-                          <ChevronRight className="w-3 h-3 opacity-0 -ml-3 group-hover/link:opacity-100 group-hover/link:ml-0 transition-all" />
-                          {article}
-                        </a>
-                      </li>
+                  <Accordion type="single" collapsible className="w-full">
+                    {section.articles.map((article, index) => (
+                      <AccordionItem key={article.title} value={`item-${index}`} className="border-none">
+                        <AccordionTrigger className="text-sm text-muted-foreground hover:text-primary transition-colors py-2 hover:no-underline text-left">
+                          {article.title}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-xs text-muted-foreground">
+                          {article.content}
+                        </AccordionContent>
+                      </AccordionItem>
                     ))}
-                  </ul>
+                  </Accordion>
                 </div>
               )
             })}

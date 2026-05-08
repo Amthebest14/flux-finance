@@ -190,12 +190,23 @@ export function UnifiedDashboardHeader() {
             </DropdownMenu>
 
             {/* Notifications (Desktop only) */}
-            <Button variant="ghost" size="icon" className="relative h-8 w-8 hidden md:flex mr-2" onClick={() => setShowNotificationDot(false)}>
-              <Bell className="w-4 h-4" />
-              {showNotificationDot && (
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full" />
-              )}
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative h-8 w-8 hidden md:flex mr-2" onClick={() => setShowNotificationDot(false)}>
+                  <Bell className="w-4 h-4" />
+                  {showNotificationDot && (
+                    <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="glass w-64 p-4">
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-semibold text-foreground">🎉 Welcome to Flux Finance</p>
+                  <p className="text-xs text-muted-foreground">Start exploring our privacy-preserving yield strategies.</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">5m ago</p>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Wallet (Desktop only) */}
             <div className="hidden md:flex">
